@@ -1,5 +1,7 @@
 # Flight route pandemic simulation
 
+A data mining project, meant to calculate where resources should be focused for reducing a pandemic spread through flight routes.
+
 ## Disclaimer
 
 The data used for the analysis was gathered from [OpenFlights](https://openflights.org/data.html). It is available under the [Open Database License](https://opendatacommons.org/licenses/odbl/1.0/). The result of our work, and everything in this repository is licensed under the [MIT License](./LICENSE).
