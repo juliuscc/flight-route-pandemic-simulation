@@ -3,7 +3,7 @@ import networkx as nx
 
 routes = read_routes_from_file("../input/routes.dat")
 
-G = nx.Graph()
+G = nx.DiGraph()
 
 G.add_edges_from(routes)
 
