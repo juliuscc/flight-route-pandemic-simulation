@@ -8,4 +8,4 @@ RUN pip install networkx
 ADD input /input
 ADD lib /lib
 
-CMD [ "python", "/lib/foo.py" ]
+CMD [ "python", "/lib/index.py" ]
