@@ -22,5 +22,4 @@ def iterate_graph(graph):
     neighbours = set(flatten(neighbours_with_doublet))
 
     for neighbour in neighbours:
-        print("Neighbour: " + str(neighbour))
         graph.add_node(neighbour, contaminated=True, contaminated_step=1)
