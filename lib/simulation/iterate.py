@@ -1,7 +1,7 @@
 import networkx as nx
 
 
-def iterate_graph(graph):
+def iterate_graph(graph, step):
 
     def is_contaminated(node):
         return node[1]['contaminated']
@@ -22,4 +22,9 @@ def iterate_graph(graph):
     neighbours = set(flatten(neighbours_with_doublet))
 
     for neighbour in neighbours:
-        graph.add_node(neighbour, contaminated=True, contaminated_step=1)
+        if(not is_contaminated(list(graph.nodes.data())[neighbour])):
+            graph.add_node(
+                neighbour,
+                contaminated=True,
+                contaminated_step=step
+            )

@@ -11,11 +11,11 @@ graph.add_node(0, contaminated=True, contaminated_step=0)
 print(graph.edges)
 print(graph.nodes.data())
 
-iterate_graph(graph)
+iterate_graph(graph, 1)
 print(graph.nodes.data())
 
-iterate_graph(graph)
+iterate_graph(graph, 2)
 print(graph.nodes.data())
 
-iterate_graph(graph)
+iterate_graph(graph, 3)
 print(graph.nodes.data())
