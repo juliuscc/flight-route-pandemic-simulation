@@ -5,6 +5,7 @@ import networkx as nx
 
 routes = read_routes_from_file("../input/routes.dat")
 # Dictionary with {'id': (0 = airport name, 1 = city, 2 = country)}
+
 airportDict = read_airports_from_file("../input/airports.dat")
 
 G = nx.Graph()
