@@ -10,7 +10,8 @@ def iterate_graph(graph, step):
         return node[0]
 
     contaminated_nodes = set(
-        map(get_node_id, filter(is_contaminated, graph.nodes.data())))
+        map(get_node_id, filter(is_contaminated, graph.nodes.data()))
+    )
 
     neighbours_with_doublet = list(map(
         lambda node: list(graph.adj[node]),
@@ -22,7 +23,8 @@ def iterate_graph(graph, step):
     neighbours = set(flatten(neighbours_with_doublet))
 
     for neighbour in neighbours:
-        if(not is_contaminated(list(graph.nodes.data())[neighbour])):
+        data_current_node = list(graph.nodes.data())[neighbour]
+        if(not is_contaminated(data_current_node)):
             graph.add_node(
                 neighbour,
                 contaminated=True,
