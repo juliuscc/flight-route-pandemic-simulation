@@ -15,6 +15,12 @@ def read_routes_from_file(filename):
     def parse_route(route):
         return (route[3], route[5])
 
-    routes = list(map(parse_route, map(divide_lines, lines)))
+    def filter_null_nodes(node):
+        return (node[0] != '\\N') and (node[1] != '\\N')
+
+    routes = list(
+        filter(filter_null_nodes,
+               map(parse_route,
+                   map(divide_lines, lines))))
 
     return routes
