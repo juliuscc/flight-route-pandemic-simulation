@@ -13,6 +13,7 @@ graph.add_node(0, contaminated=True, contaminated_step=0)
 print("Printing edges", graph.edges)
 print(graph.nodes.data())
 
+
 check_progress(graph)
 
 iterate_graph(graph)
@@ -24,4 +25,12 @@ print(graph.nodes.data())
 
 check_progress(graph)
 iterate_graph(graph)
+
+iterate_graph(graph, 1)
+print(graph.nodes.data())
+
+iterate_graph(graph, 2)
+print(graph.nodes.data())
+
+iterate_graph(graph, 3)
 print(graph.nodes.data())
