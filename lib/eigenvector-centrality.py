@@ -7,32 +7,39 @@ from read import read_routes_from_file
 
 routes = read_routes_from_file("input/routes.dat")
 
-shortRoutes = []
+# shortRoutes = []
 # for item in range(0, 1000):
 #     shortRoutes.append(routes[item])
 
 G = nx.DiGraph()
 G.add_edges_from(routes)
 
+
 eigencentrality = nx.eigenvector_centrality(G)
 centrality = [math.sqrt(c) for v, c in eigencentrality.items()]
 # print(centrality)
 # G.add_edges_from(shortRoutes)
 
-# val_map = {'A': 1.0,
-#            'D': 0.5714285714285714,
-#            'H': 0.0}
+# Select top N elements
+numberOfElements = 20
+
+# Different values here as we are trying to display real values
+print("TopN Eigenvector Centrality: (n= " + numberOfElements + ")")
+print(sorted(eigencentrality, reverse=True)[:numberOfElements])
+
+# Find the threashold that can be used to filter nodes.
+topNThreshold = sorted(centrality, reverse=True)[:numberOfElements][-1]
 
 minimum = min(centrality)
 maximum = max(centrality)
 
-print(minimum)
-print(maximum)
-
 norm = matplotlib.colors.Normalize(vmin=minimum, vmax=maximum, clip=True)
 mapper = cm.ScalarMappable(norm=norm, cmap=cm.inferno_r)
 
-values = [mapper.to_rgba(c) for c in centrality]
+values = [
+    'green' if (c > topNThreshold) else mapper.to_rgba(c)
+    for c in centrality
+]
 
 # values = [val_map.get(node, 0.25) for node in G.nodes()]
 
