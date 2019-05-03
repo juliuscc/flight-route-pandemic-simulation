@@ -24,8 +24,9 @@ centrality = [math.sqrt(c) for v, c in eigencentrality.items()]
 numberOfElements = 20
 
 # Different values here as we are trying to display real values
-print("TopN Eigenvector Centrality: (n= " + numberOfElements + ")")
-print(sorted(eigencentrality, reverse=True)[:numberOfElements])
+print("TopN Eigenvector Centrality: (n=" + str(numberOfElements) + ")")
+print(sorted([c for v, c in eigencentrality.items()],
+             reverse=True)[:numberOfElements])
 
 # Find the threashold that can be used to filter nodes.
 topNThreshold = sorted(centrality, reverse=True)[:numberOfElements][-1]
