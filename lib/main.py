@@ -24,6 +24,8 @@ G = read_graph_with_importance()
 
 print(G.nodes.data())
 
+# print(G.nodes.data())
+
 # steps_for_all_nodes = test_all_nodes(G)
 # print(steps_for_all_nodes)
 # print(f"Mean steps for all nodes: {mean(steps_for_all_nodes)}")

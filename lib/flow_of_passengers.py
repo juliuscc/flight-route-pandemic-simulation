@@ -36,9 +36,13 @@ def read_graph_with_importance():
 
     # Read routes and airport information information
     data = pd.read_csv("input/airports.dat", header=-1)
-    airports = pd.DataFrame(data, columns=[0, 4]).rename(
-        columns={0: "Id", 4: "Code"})
-    airports = airports[airports.Code != "\\N"]
+    airport_data_frame = pd.DataFrame(data, columns=[1, 4]).rename(
+        columns={1: "Name", 4: "Code"})
+    airport_data_frame = airport_data_frame[airport_data_frame.Code != "\\N"]
+
+    airports = {}
+    for index, row in airport_data_frame.iterrows():
+        airports[row['Code']] = row['Name']
 
     data = pd.read_csv("input/routes.dat", header=-1)
     routes = pd.DataFrame(data, columns=[2, 4]).rename(
@@ -49,6 +53,9 @@ def read_graph_with_importance():
 
     G = nx.Graph()
     G.add_edges_from(tuples)
+
+    for node in G.nodes():
+        G.add_node(node, name=airports.get(node))
 
     def convert(name):
         """Lookup the normalized value for any airport or return 0"""
@@ -77,7 +84,8 @@ def read_graph_with_importance():
     nodes_with_weights = zip(G.nodes(), comb_val)
 
     for (node_id, value) in nodes_with_weights:
-        G.add_node(node_id, importance=value)
+        attributes = G.nodes.data()[node_id]
+        G.add_node(node_id, importance=value, **attributes)
 
     return G
 
