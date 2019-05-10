@@ -49,7 +49,7 @@ def steps_for_node(original_graph, node_id):
         coverage = check_progress(graph)
         steps += 1
 
-        if steps > 100:
+        if steps > 20:
             raise Exception('Stuck in loop')
 
     return steps
