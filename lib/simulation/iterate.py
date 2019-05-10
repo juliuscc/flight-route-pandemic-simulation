@@ -1,41 +1,37 @@
 import networkx as nx
+import random
+
+
+def infect_node(graph, node_id, step=0):
+    attributes = graph.nodes.data()[node_id]
+    attributes['contaminated'] = True
+    attributes['contaminated_step'] = step
+
+    graph.add_node(
+        node_id,
+        **attributes
+    )
 
 
 def iterate_graph(graph, step):
 
-    def is_contaminated(node, is_tuple=False):
-        if is_tuple:
-            return (node[1]['contaminated'])
-        else:
-            return (node['contaminated'])
-
-    def get_node_id(node):
-        return node[0]
-
-    contaminated_nodes = set(
-        map(get_node_id, filter(
-            lambda node: is_contaminated(node, True),
-            graph.nodes.data()
-        ))
+    # Get all infected nodes
+    infected_nodes = filter(
+        lambda node: node[1]['contaminated'],
+        graph.nodes.data()
     )
 
-    neighbours_with_doublet = list(map(
-        lambda node: list(graph.adj[node]),
-        contaminated_nodes
-    ))
+    # Iterate over every infected node
+    for infected in infected_nodes:
+        infected_id = infected[0]
+        infection_probability = infected[1]['importance']
 
-    # print(f"Neighbours: {graph.adj[3484]}")
+        # Get all healthy neighbours of the infected node
+        neighbours = graph.adj[infected_id]
+        healthy_neighbours = [neighbour for neighbour in neighbours if not graph.nodes.data()[
+            neighbour]['contaminated']]
 
-    def flatten(l): return [item for sublist in l for item in sublist]
-
-    neighbours = set(flatten(neighbours_with_doublet))
-
-    for neighbour in neighbours:
-        data_current_node = graph.nodes.data()[neighbour]
-        if(not is_contaminated(data_current_node)):
-            data_current_node['contaminated'] = True
-            data_current_node['contaminated_step'] = step
-            graph.add_node(
-                neighbour,
-                **data_current_node
-            )
+        # Do a coin flip for every healthy neighbour and infect
+        for neighbour in healthy_neighbours:
+            if random.random() < infection_probability:
+                infect_node(graph, neighbour)
