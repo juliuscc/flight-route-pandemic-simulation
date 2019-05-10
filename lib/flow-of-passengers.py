@@ -27,8 +27,8 @@ dataset = dataset.dropna()
 dataset = dataset.sort_values(by=["Code"])
 
 # Normalize the passenger column
-max = dataset['Passengers'].max()
-dataset["Passengers"] = dataset["Passengers"] / max
+max_passengers = dataset['Passengers'].max()
+dataset["Passengers"] = dataset["Passengers"] / max_passengers
 
 passengerSet = dataset
 
