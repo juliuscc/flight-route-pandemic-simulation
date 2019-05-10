@@ -33,8 +33,9 @@ def iterate_graph(graph, step):
     for neighbour in neighbours:
         data_current_node = graph.nodes.data()[neighbour]
         if(not is_contaminated(data_current_node)):
+            data_current_node['contaminated'] = True
+            data_current_node['contaminated_step'] = step
             graph.add_node(
                 neighbour,
-                contaminated=True,
-                contaminated_step=step
+                **data_current_node
             )

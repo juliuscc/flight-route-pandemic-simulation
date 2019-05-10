@@ -32,10 +32,13 @@ def steps_for_node(original_graph, node_id):
     # print(graph.edges())
     # print(graph.adj['2618'])
 
+    attributes = graph.nodes.data()[node_id]
+    attributes['contaminated'] = True
+    attributes['contaminated_step'] = 0
+
     graph.add_node(
         node_id,
-        contaminated=True,
-        contaminated_step=0
+        **attributes
     )
 
     steps = 0
