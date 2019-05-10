@@ -9,6 +9,7 @@ G = read_graph_with_importance()
 
 steps_for_all_nodes = test_all_nodes(G)
 print(steps_for_all_nodes)
+# Mean was 13.314068441064638 (but all over 20 were removed)
 print(f"Mean steps for all nodes: {mean(steps_for_all_nodes)}")
 
 # print(nx.average_clustering(G))
