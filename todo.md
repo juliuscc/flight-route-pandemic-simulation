@@ -33,7 +33,7 @@
     -   smitta internt
     -   man blir frisk
 
-Simuleringssteg
+## Simuleringssteg
 
 -   Jämför eigenvector centrality och betweenness centrality. Vilken typ av smittokurva skapar de olika metoder.
 -   Vi börjar alltid med en infekterad nod och simulerar 100 steg i simuleringen. Vi plottar antalet infekterade noder mot tidssteg för detta som en point plot (ej kurva för det blir svårt att se).

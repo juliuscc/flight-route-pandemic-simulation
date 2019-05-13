@@ -5,4 +5,5 @@ __pycache__
 *.pyc
 
 results/*.pdf
-input/.ipynb_checkpoints/weight-nodes-by-passengers-checkpoint.ipynb
+input/.ipynb_checkpoints/*
+.ipynb_checkpoints/*
