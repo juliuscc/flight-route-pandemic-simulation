@@ -11,11 +11,14 @@ def test_all_nodes(original_graph):
     index = 0
 
     for node in original_graph.nodes:
+
         index += 1
         if index % 5 == 0:
             print(f"Tested {(index / graph_size) * 100}% of the graph")
         try:
-            steps_for_all_nodes.append(steps_for_node(original_graph, node))
+            steps_for_current_node = steps_for_node(original_graph, node)
+            # print(steps_for_current_node)
+            steps_for_all_nodes.append(steps_for_current_node)
         except Exception:
             print(
                 f"Node {node} is probably not connected to the giant connected component of the graph. Consider removing {node} from dataset."
@@ -27,10 +30,6 @@ def test_all_nodes(original_graph):
 def steps_for_node(original_graph, node_id):
     graph = original_graph.copy()
     prepare_graph(graph)
-
-    # print(graph.nodes())
-    # print(graph.edges())
-    # print(graph.adj['2618'])
 
     attributes = graph.nodes.data()[node_id]
     attributes['contaminated'] = True
@@ -49,10 +48,7 @@ def steps_for_node(original_graph, node_id):
         coverage = check_progress(graph)
         steps += 1
 
-        if steps > 20:
+        if steps > 100:
             raise Exception('Stuck in loop')
 
     return steps
-
-    # print(
-    #     f"It takes {steps} for 95% of the world to be contaminated when beginning from node {node_id}")
