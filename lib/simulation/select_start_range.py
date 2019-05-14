@@ -5,7 +5,7 @@ import pandas as pd
 import networkx as nx
 
 
-def range(G, elements=10, selectRange=0.1, ranges=3, randomSeed=123456789):
+def range(G, elements=10, selectRange=0.1, randomSeed=123456789):
     """Returns semi-random high, middle and low range from the graph based on degree. 
     Elements are selected randomly from the nodes that fall into the selection ranges
     [:range], [center-range/2:center+range/2] and [-range:]"""
@@ -24,11 +24,13 @@ def range(G, elements=10, selectRange=0.1, ranges=3, randomSeed=123456789):
 
     # Prune the ranges until we have the correct number of elements in each.
     random.seed(randomSeed)
+    revRanges = list()
     for r in allRanges:
         while(len(r) > elements):
             r.pop(random.randint(0, len(r) - 1))
+        revRanges.append([(n, d) for d, n in r])
 
-    return (allRanges)
+    return (revRanges)
 
 
 if __name__ == '__main__':
@@ -42,5 +44,7 @@ if __name__ == '__main__':
 
     G = nx.Graph()
     G.add_edges_from(tuples)
+
+    # print(G.nodes)
 
     print(range(G))

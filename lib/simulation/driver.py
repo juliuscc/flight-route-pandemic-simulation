@@ -3,6 +3,8 @@ from simulation.prepare_graph import prepare_graph
 from simulation.check_progress import check_progress
 from simulation.iterate import iterate_graph
 
+import simulation.select_start_range as ssr
+
 
 def test_all_nodes(original_graph):
     steps_for_all_nodes = list()
@@ -23,6 +25,35 @@ def test_all_nodes(original_graph):
             print(
                 f"Node {node} is probably not connected to the giant connected component of the graph. Consider removing {node} from dataset."
             )
+
+    return steps_for_all_nodes
+
+
+def test_for_ranges(original_graph):
+    steps_for_all_nodes = list()
+    exception_nodes = list()
+    graph_size = len(original_graph.nodes)
+    ranges = ssr.range(original_graph)
+
+    print("Testing ranges. High to low.")
+
+    for rI, r in enumerate(ranges):
+        print(f"Testing range ({rI+1} / {len(ranges)}): ", end='', flush=True)
+        for (node, degree) in r:
+            print("*", end='', flush=True)
+
+            try:
+                steps_for_current_node = steps_for_node(original_graph, node)
+                # print(steps_for_current_node)
+                steps_for_all_nodes.append(steps_for_current_node)
+            except Exception:
+                exception_nodes.append(node)
+        print("")
+
+    if (len(exception_nodes) > 0):
+        print(
+            f"Nodes: {exception_nodes} probably not i giant component. Consider removing!"
+        )
 
     return steps_for_all_nodes
 
