@@ -46,6 +46,8 @@ def iterate_graph(graph, step):
         healthy_neighbours = [neighbour for neighbour in neighbours if not graph.nodes.data()[
             neighbour]['contaminated']]
 
+# TODO: This should be updated to consider the external factor
+
         # Do a coin flip for every healthy neighbour and infect
         for neighbour in healthy_neighbours:
             if random.random() < infection_probability:

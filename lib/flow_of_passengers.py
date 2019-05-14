@@ -164,7 +164,7 @@ def read_graph_w_extrapolated_flow():
 
     for (node_id, value) in nodes_with_weights:
         attributes = G.nodes.data()[node_id]
-        G.add_node(node_id, importance=value, **attributes)
+        G.add_node(node_id, population=value, **attributes)
 
     return G
 
