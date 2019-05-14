@@ -1,22 +1,19 @@
 import os
 import networkx as nx
-from flow_of_passengers import read_graph_with_importance
 # from betweenness import get_betweenness_value
-from simulation.driver import test_all_nodes, test_for_ranges
 from statistics import mean
 
+from flow_of_passengers import read_graph_with_importance
+
+import lib.simulation.driver as simDriver
+import lib.simulation.prepare_graph as prepare_graph
+
 G = read_graph_with_importance()
-
-
-def runForAllNodes():
-    steps_for_all_nodes = test_all_nodes(G)
-    print(steps_for_all_nodes)
-    # Mean was 13.314068441064638 (but all over 20 were removed)
-    print(f"Mean steps for all nodes: {mean(steps_for_all_nodes)}")
+prepare_graph.add_seir_states(G)
 
 
 def runForRanges():
-    steps_for_nodes = test_for_ranges(G)
+    steps_for_nodes = simDriver.test_for_ranges(G)
     print(steps_for_nodes)
 
 

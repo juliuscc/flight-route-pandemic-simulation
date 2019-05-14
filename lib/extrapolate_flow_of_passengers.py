@@ -7,6 +7,14 @@ import networkx as nx
 import pandas as pd
 
 
+def extrapolateValueFunc():
+    """Create a function that can be used to predict number of passengers from
+    the degree of any node in the network."""
+    (x, y) = _extrapolateFlow()  # not real x and y values. they need to be remapped
+    linReg = _getLineRegFunc(x, y)
+    return _getValueFunc(linReg)
+
+
 def _extrapolateFlow():
     """This function reads the dataset and maps x values to y values such that a linear
     relationship is formed."""
@@ -84,7 +92,7 @@ def _getLineRegFunc(x, y):
         (len(x)*np.sum(x*x) - np.sum(x) * np.sum(x))
     b = (np.sum(y) - m * np.sum(x)) / len(x)
 
-    print(f"linreg = a*x + b = {m}*x+{b}")
+    # print(f"linreg = a*x + b = {m}*x+{b}")
 
     return inner
 
@@ -100,12 +108,6 @@ def _getValueFunc(linReg):
         realY = pow(math.e, linReg(modulatedX))
         return realY
     return inner
-
-
-def extrapolateValueFunc():
-    (x, y) = _extrapolateFlow()  # not real x and y values. they need to be remapped
-    linReg = _getLineRegFunc(x, y)
-    return _getValueFunc(linReg)
 
 
 # Create the plot and write to file.

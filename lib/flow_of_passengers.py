@@ -6,7 +6,7 @@ import networkx as nx
 import pandas as pd
 import numpy as np
 
-import extrapolate_flow_of_passengers as extr
+import lib.extrapolate_flow_of_passengers as extr
 
 
 def read_graph_with_importance():

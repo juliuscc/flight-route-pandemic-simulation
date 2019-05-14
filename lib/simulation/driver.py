@@ -1,36 +1,14 @@
 import networkx as nx
-from simulation.prepare_graph import prepare_graph
-from simulation.check_progress import check_progress
-from simulation.iterate import iterate_graph
 
-import simulation.select_start_range as ssr
-
-
-def test_all_nodes(original_graph):
-    steps_for_all_nodes = list()
-
-    graph_size = len(original_graph.nodes)
-    index = 0
-
-    for node in original_graph.nodes:
-
-        index += 1
-        if index % 5 == 0:
-            print(f"Tested {(index / graph_size) * 100}% of the graph")
-        try:
-            steps_for_current_node = steps_for_node(original_graph, node)
-            # print(steps_for_current_node)
-            steps_for_all_nodes.append(steps_for_current_node)
-        except Exception:
-            print(
-                f"Node {node} is probably not connected to the giant connected component of the graph. Consider removing {node} from dataset."
-            )
-
-    return steps_for_all_nodes
+import prepare_graph
+import check_progress
+import lib.simulation.iterate as iterate_graph
+import select_start_range as ssr
+import simulation_const as sim_const
 
 
 def test_for_ranges(original_graph):
-    steps_for_all_nodes = list()
+    series_for_all_ranges = list()
     exception_nodes = list()
     graph_size = len(original_graph.nodes)
     ranges = ssr.range(original_graph)
@@ -38,50 +16,75 @@ def test_for_ranges(original_graph):
     print("Testing ranges. High to low.")
 
     for rI, r in enumerate(ranges):
-        steps_int = list()
+        series_for_range = list()
         print(f"Testing range ({rI+1} / {len(ranges)}): ", end='', flush=True)
         for (node, degree) in r:
             print("*", end='', flush=True)
 
             try:
-                steps_for_current_node = steps_for_node(original_graph, node)
+                SEIR_convergence_series = simulate_with_starting_point(
+                    original_graph, node)
                 # print(steps_for_current_node)
-                steps_int.append(steps_for_current_node)
+                series_for_range.append(SEIR_convergence_series)
             except Exception:
                 exception_nodes.append(node)
         print("")
-        steps_for_all_nodes.append(steps_int)
+        series_for_all_ranges.append(series_for_range)
 
     if (len(exception_nodes) > 0):
         print(
-            f"Nodes: {exception_nodes} probably not i giant component. Consider removing!"
+            f"Nodes: {exception_nodes} did not finish. Probably not i giant component. Consider removing!"
         )
 
-    return steps_for_all_nodes
+    return series_for_all_ranges
 
 
-def steps_for_node(original_graph, node_id):
+def simulate_with_starting_point(original_graph, node_id):
+    # Create a copy of the graph and add the SEIR properties
     graph = original_graph.copy()
-    prepare_graph(graph)
 
-    attributes = graph.nodes.data()[node_id]
-    attributes['contaminated'] = True
-    attributes['contaminated_step'] = 0
-
-    graph.add_node(
-        node_id,
-        **attributes
+    # Add the exposed airport
+    node = graph.nodes[node_id]
+    node['exposed'] = int(
+        sim_const.PORTION_OF_POPULATION_EXPOSED * node['susceptible']
+    )
+    node['susceptible'] = (
+        node['susceptible'] - node['exposed']
     )
 
-    steps = 0
-    coverage = 0
+    step = 0
+    states = list()
+    seir_state = None
+    previous_state = None
 
-    while(coverage < 0.95):
-        iterate_graph(graph, steps)
-        coverage = check_progress(graph)
-        steps += 1
+    # In a loop:
+    while True:
+        # 1.
+        # Collect the current state for all nodes in the network.
+        seir_state = check_progress.collect_SEIR_state_sum(graph)
 
-        if steps > 100:
-            raise Exception('Stuck in loop')
+        # 1b.
+        # If this state is exactly the same as previous, no change in any field
+        # we should stop the simulation
+        if previous_state != None and seir_state == previous_state:
+            break
 
-    return steps
+        # 1c.
+        # If we have done too many steps (hard limit), break the simulation anyway
+        if step > sim_const.MAX_STEPS_IN_SIMULATION:
+            break
+
+        # 2.
+        # Append the sum of all SEIR state divided by total population
+        # to the current step (sum of all output variables should be 1)
+        normalized = check_progress.normalize_SEIR_data(seir_state)
+        states.append(normalized)
+
+        # 3.
+        # Perform one iteration on the graph.
+        iterate_graph.iterate_graph(graph)
+
+        previous_state = seir_state
+        step += 1
+
+    return states
