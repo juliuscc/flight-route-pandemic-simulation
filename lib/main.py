@@ -18,7 +18,6 @@ def runForAllNodes():
 def runForRanges():
     steps_for_nodes = test_for_ranges(G)
     print(steps_for_nodes)
-    print(f"Mean steps for all nodes: {mean(steps_for_nodes)}")
 
 
 runForRanges()

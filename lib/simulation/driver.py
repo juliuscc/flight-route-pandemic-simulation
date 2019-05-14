@@ -38,6 +38,7 @@ def test_for_ranges(original_graph):
     print("Testing ranges. High to low.")
 
     for rI, r in enumerate(ranges):
+        steps_int = list()
         print(f"Testing range ({rI+1} / {len(ranges)}): ", end='', flush=True)
         for (node, degree) in r:
             print("*", end='', flush=True)
@@ -45,10 +46,11 @@ def test_for_ranges(original_graph):
             try:
                 steps_for_current_node = steps_for_node(original_graph, node)
                 # print(steps_for_current_node)
-                steps_for_all_nodes.append(steps_for_current_node)
+                steps_int.append(steps_for_current_node)
             except Exception:
                 exception_nodes.append(node)
         print("")
+        steps_for_all_nodes.append(steps_int)
 
     if (len(exception_nodes) > 0):
         print(
