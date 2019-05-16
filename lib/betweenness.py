@@ -1,18 +1,21 @@
 import networkx as nx
 
 
-def get_betweenness_value(graph):
+def get_betweenness_exclude_set(graph, elements):
 
+    print("Calculating betweenness centrality")
     betweenness_nodes = nx.betweenness_centrality(graph, 100)
 
-    nodes = list()
+    centrality = [(c, v) for v, c in betweenness_nodes.items()]
 
-    for key, value in betweenness_nodes.items():
-        nodes.append((key, value))
+    # Find the threashold that can be used to filter nodes.
+    topElements = sorted(centrality, reverse=True)[:elements]
 
-    def get_betweenness_value(node):
-        return node[1]
+    topElements = [v for c, v in centrality]
+    minimum = min(topElements)
+    maximum = max(topElements)
 
-    sorted_list = sorted(nodes, key=get_betweenness_value)
+    print(
+        f"Using {elements} nodes with betweenness centrality in range [{minimum}:{maximum}]")
 
-    return sorted_list
+    return set(topElements)

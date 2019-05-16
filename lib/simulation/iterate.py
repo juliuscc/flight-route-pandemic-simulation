@@ -43,17 +43,6 @@ def _do_external_scatter(graph, message_buffer):
             if neighbourID not in message_buffer:
                 message_buffer[neighbourID] = list()
 
-            # WRONG!!
-            # # This makes sure that we contribute the correct number
-            # # of people towards the other node.
-            # incoming_fraction = 1 - simConst.BETA_KEEP_LOCAL_STATE_FRACTION
-            # beta = ((incoming_fraction * node_data['population']) /
-            #         graph.nodes[neighbourID]['sum_neighbour_weights'])
-            # P = beta * graph.nodes[neighbourID]['population']
-
-            # # This is the factor we need to multiply our state with
-            # f = P / node_data['population']
-
             f = ((graph.nodes[neighbourID]['population'] *
                   (1 - simConst.BETA_KEEP_LOCAL_STATE_FRACTION))
                  /
@@ -175,6 +164,11 @@ def _do_internal_update(graph):
         node_data['exposed'] = x_new[1]
         node_data['infectious'] = x_new[2]
         node_data['recovered'] = x_new[3]
+
+        # Just convert all infected to susceptible.
+        if 'blocked' in node_data:
+            node_data['susceptible'] += node_data['infectious']
+            node_data['infectious'] = 0
 
     return
 

@@ -95,6 +95,7 @@ def read_graph_with_importance():
 
 def read_graph_w_extrapolated_flow():
     # Read the airport information data.
+    print("Reading datasets")
     data = pd.read_excel("input/other-airports.xls", header=2)
     data_other = pd.DataFrame(data, columns=["Code", "Pax 2017"]).rename(
         columns={"Pax 2017": "Passengers"})
@@ -130,6 +131,7 @@ def read_graph_w_extrapolated_flow():
     routes = pd.DataFrame(data, columns=[2, 4]).rename(
         columns={2: "From", 4: "To"})
 
+    print("Creating graph")
     # Convert it to a format that graphX reads and load the dataset into it
     tuples = [tuple(x) for x in routes.values]
 
@@ -147,6 +149,7 @@ def read_graph_w_extrapolated_flow():
         else:
             return 0
 
+    print("Extrapolating data for missing passengers")
     # Create values for each of the nodes in the graph based on passenger
     # density
     extrapolatedValueFun = extr.extrapolateValueFunc()
@@ -162,6 +165,7 @@ def read_graph_w_extrapolated_flow():
 
     nodes_with_weights = zip(G.nodes(), compinedData)
 
+    print("Adding real and fake values")
     for (node_id, value) in nodes_with_weights:
         attributes = G.nodes.data()[node_id]
         G.add_node(node_id, population=value, **attributes)

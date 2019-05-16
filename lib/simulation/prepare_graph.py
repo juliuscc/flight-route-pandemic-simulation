@@ -15,3 +15,11 @@ def add_seir_states(graph):
         graph.nodes[node]['recovered'] = 0
         graph.nodes[node]['sum_neighbour_weights'] = sumNeighbourWeights
     return graph
+
+
+def add_blocked_nodes(graph, blocked_nodes):
+    for node_id in graph.nodes:
+        if node_id in blocked_nodes:
+            graph.nodes[node_id]['blocked'] = True
+
+    return graph
