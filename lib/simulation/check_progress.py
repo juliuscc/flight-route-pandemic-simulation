@@ -5,6 +5,7 @@ class SEIRData:
     exposed = 0
     infectious = 0
     recovered = 0
+    total = 0
 
     def __eq__(self, other):
         """Override the default Equals behavior"""
@@ -26,7 +27,7 @@ class SEIRData:
         )
 
     def __str__(self):
-        return f"{self.susceptible} {self.exposed} {self.infectious} {self.recovered}"
+        return f"{self.susceptible} {self.exposed} {self.infectious} {self.recovered} {self.total}"
 
 
 def collect_SEIR_state_sum(graph):
@@ -38,11 +39,16 @@ def collect_SEIR_state_sum(graph):
         dataItem.exposed += data_item['exposed']
         dataItem.infectious += data_item['infectious']
         dataItem.recovered += data_item['recovered']
+        dataItem.total += (dataItem.susceptible +
+                           dataItem.exposed +
+                           dataItem.infectious +
+                           dataItem.recovered)
 
     return dataItem
 
 
 def normalize_SEIR_data(seirData: SEIRData):
+    """Normalizing the data except total"""
     sum = (seirData.susceptible +
            seirData.exposed +
            seirData.infectious +
@@ -56,6 +62,7 @@ def normalize_SEIR_data(seirData: SEIRData):
     normalizedData.exposed = seirData.exposed * factor
     normalizedData.infectious = seirData.infectious * factor
     normalizedData.recovered = seirData.recovered * factor
+    normalizedData.total = seirData.total
 
     return normalizedData
 

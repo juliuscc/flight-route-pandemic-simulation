@@ -6,12 +6,13 @@ import numpy.linalg as npl
 import simulation.simulation_const as simConst
 
 recover_probability = 0.01
+
+# This buffer is used to send messages between neighbors in an efficient way.
 message_buffer = dict()
 
 
 def iterate_graph(graph):
     """Do one iteration over the graph with external and internal factors"""
-    # This buffer is used to send messages between neighbors in an efficient way.
 
     _do_external_scatter(graph, message_buffer)
     _do_external_gather(graph, message_buffer)
@@ -20,7 +21,7 @@ def iterate_graph(graph):
 
 
 def _do_external_scatter(graph, message_buffer):
-    """From each node, send information to all neighboring nodes 
+    """From each node, send information to all neighboring nodes
     about the influence it has on them"""
 
     for node_id in graph.nodes:
@@ -42,18 +43,28 @@ def _do_external_scatter(graph, message_buffer):
             if neighbourID not in message_buffer:
                 message_buffer[neighbourID] = list()
 
-            neighbour_weight = (
-                # Population for this neighbour
-                graph.nodes[neighbourID]['population'] /
-                # Total population for current node
-                node_data['sum_neighbour_weights']
-            )
+            # WRONG!!
+            # # This makes sure that we contribute the correct number
+            # # of people towards the other node.
+            # incoming_fraction = 1 - simConst.BETA_KEEP_LOCAL_STATE_FRACTION
+            # beta = ((incoming_fraction * node_data['population']) /
+            #         graph.nodes[neighbourID]['sum_neighbour_weights'])
+            # P = beta * graph.nodes[neighbourID]['population']
+
+            # # This is the factor we need to multiply our state with
+            # f = P / node_data['population']
+
+            f = ((graph.nodes[neighbourID]['population'] *
+                  (1 - simConst.BETA_KEEP_LOCAL_STATE_FRACTION))
+                 /
+                 graph.nodes[neighbourID]['sum_neighbour_weights']
+                 )
 
             # 3.
             # Append the value from this node on the end of the queue in message_buffer
             # for the neighboring node to consume.
             message_buffer[neighbourID].append(
-                node_seir_state * neighbour_weight
+                node_seir_state * f
             )
 
     return
@@ -82,20 +93,29 @@ def _do_external_gather(graph, message_buffer):
 
         message_buffer[node_id].clear()
 
-        # 3.
-        # Normalize the sum of all incoming populations to be
-        # equal to the initial_population
-        seir_sum = sum(incoming_seir_state)
-        frac = node_data['population'] / seir_sum
-        incoming_seir_state *= frac
+        # Normalizing should no longer be needed here.
+        # # 3.
+        # # Normalize the sum of all incoming populations to be
+        # # equal to the initial_population
+        # seir_sum = sum(incoming_seir_state)
+        # frac = node_data['population'] / seir_sum
+        # incoming_seir_state *= frac
 
         # 4.
         # Update local state where the fraction beta = [0, 1] of the new populations
         # come from external sources and the rest is kept from the previous state.
         new_state = (
             local_seir_state * simConst.BETA_KEEP_LOCAL_STATE_FRACTION +
-            incoming_seir_state * (1 - simConst.BETA_KEEP_LOCAL_STATE_FRACTION)
+            # NO NORMALIZING JUST ADD IT! * (1 - simConst.BETA_KEEP_LOCAL_STATE_FRACTION)
+            incoming_seir_state
         )
+
+        # To compensate for rounding errors we normalize here
+        # this is not really necessary if we don't want the number to
+        # be exactly constant.
+        seir_sum = sum(new_state)
+        frac = node_data['population'] / seir_sum
+        new_state *= frac
 
         node_data['susceptible'] = new_state[0]
         node_data['exposed'] = new_state[1]
