@@ -1,17 +1,17 @@
 import networkx as nx
 
-import prepare_graph
-import check_progress
-import lib.simulation.iterate as iterate_graph
-import select_start_range as ssr
-import simulation_const as sim_const
+import simulation.prepare_graph as prepare_graph
+import simulation.check_progress as check_progress
+import simulation.iterate as iterate_graph
+import simulation.select_start_range as ssr
+import simulation.simulation_const as sim_const
 
 
 def test_for_ranges(original_graph):
     series_for_all_ranges = list()
     exception_nodes = list()
     graph_size = len(original_graph.nodes)
-    ranges = ssr.range(original_graph)
+    ranges = ssr.range(original_graph, elements=1, selectRange=0.1,)
 
     print("Testing ranges. High to low.")
 
@@ -21,15 +21,18 @@ def test_for_ranges(original_graph):
         for (node, degree) in r:
             print("*", end='', flush=True)
 
-            try:
-                SEIR_convergence_series = simulate_with_starting_point(
-                    original_graph, node)
-                # print(steps_for_current_node)
-                series_for_range.append(SEIR_convergence_series)
-            except Exception:
-                exception_nodes.append(node)
+            SEIR_convergence_series = simulate_with_starting_point(
+                original_graph, node)
+            # print(steps_for_current_node)
+            series_for_range.append(SEIR_convergence_series)
+            # try:
+            # except Exception:
+            #     exception_nodes.append(node)
         print("")
         series_for_all_ranges.append(series_for_range)
+
+# TODO: REMOVE THIS IF WE WANT TO RUN FOR ALL RANGES
+        break
 
     if (len(exception_nodes) > 0):
         print(
@@ -48,8 +51,11 @@ def simulate_with_starting_point(original_graph, node_id):
     node['exposed'] = int(
         sim_const.PORTION_OF_POPULATION_EXPOSED * node['susceptible']
     )
+    node['infected'] = int(
+        sim_const.PORTION_OF_POPULATION_INFECTED * node['susceptible']
+    )
     node['susceptible'] = (
-        node['susceptible'] - node['exposed']
+        node['susceptible'] - node['exposed'] - node['infected']
     )
 
     step = 0

@@ -3,7 +3,7 @@
 class SEIRData:
     susceptible = 0
     exposed = 0
-    infected = 0
+    infectious = 0
     recovered = 0
 
     def __eq__(self, other):
@@ -11,30 +11,33 @@ class SEIRData:
         return (
             self.susceptible == other.susceptible and
             self.exposed == other.exposed and
-            self.infected == other.infected and
+            self.infectious == other.infectious and
             self.recovered == other.recovered
         )
 
     def __ne__(self, other):
         """Override the default Not equal behavior"""
         return (
+            other == None or
             self.susceptible != other.susceptible or
             self.exposed != other.exposed or
-            self.infected != other.infected or
+            self.infectious != other.infectious or
             self.recovered != other.recovered
         )
+
+    def __str__(self):
+        return f"{self.susceptible} {self.exposed} {self.infectious} {self.recovered}"
 
 
 def collect_SEIR_state_sum(graph):
     dataItem = SEIRData()
 
-    for dataItem in graph.nodes.data():
-        # node id = dataItem[0]
-        # actual data = dataItem[1]
-        dataItem.susceptible += dataItem[1]['susceptible']
-        dataItem.exposed += dataItem[1]['exposed']
-        dataItem.infected += dataItem[1]['infected']
-        dataItem.recovered += dataItem[1]['recovered']
+    for node_id in graph.nodes:
+        data_item = graph.nodes[node_id]
+        dataItem.susceptible += data_item['susceptible']
+        dataItem.exposed += data_item['exposed']
+        dataItem.infectious += data_item['infectious']
+        dataItem.recovered += data_item['recovered']
 
     return dataItem
 
@@ -42,7 +45,7 @@ def collect_SEIR_state_sum(graph):
 def normalize_SEIR_data(seirData: SEIRData):
     sum = (seirData.susceptible +
            seirData.exposed +
-           seirData.infected +
+           seirData.infectious +
            seirData.recovered)
 
     factor = 1 / sum
@@ -51,7 +54,7 @@ def normalize_SEIR_data(seirData: SEIRData):
 
     normalizedData.susceptible = seirData.susceptible * factor
     normalizedData.exposed = seirData.exposed * factor
-    normalizedData.infected = seirData.infected * factor
+    normalizedData.infectious = seirData.infectious * factor
     normalizedData.recovered = seirData.recovered * factor
 
     return normalizedData

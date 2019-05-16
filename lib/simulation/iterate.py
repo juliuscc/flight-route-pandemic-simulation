@@ -1,16 +1,17 @@
 import networkx as nx
 import random
 import numpy as np
+import numpy.linalg as npl
 
-import lib.simulation.simulation_const as simConst
+import simulation.simulation_const as simConst
 
 recover_probability = 0.01
+message_buffer = dict()
 
 
 def iterate_graph(graph):
     """Do one iteration over the graph with external and internal factors"""
     # This buffer is used to send messages between neighbors in an efficient way.
-    message_buffer = dict()
 
     _do_external_scatter(graph, message_buffer)
     _do_external_gather(graph, message_buffer)
@@ -29,7 +30,7 @@ def _do_external_scatter(graph, message_buffer):
         node_seir_state = np.array([
             node_data['susceptible'],
             node_data['exposed'],
-            node_data['infected'],
+            node_data['infectious'],
             node_data['recovered']]
         )
 
@@ -67,11 +68,11 @@ def _do_external_gather(graph, message_buffer):
         local_seir_state = np.array([
             node_data['susceptible'],
             node_data['exposed'],
-            node_data['infected'],
+            node_data['infectious'],
             node_data['recovered']
         ])
 
-        incoming_seir_state = np.array([0, 0, 0, 0])
+        incoming_seir_state = np.array([0., 0., 0., 0.])
 
         # 1.
         # Acquire the list of all neighbors messages and sum the incoming population
@@ -98,22 +99,62 @@ def _do_external_gather(graph, message_buffer):
 
         node_data['susceptible'] = new_state[0]
         node_data['exposed'] = new_state[1]
-        node_data['infected'] = new_state[2]
+        node_data['infectious'] = new_state[2]
         node_data['recovered'] = new_state[3]
     return
 
 
 def _do_internal_update(graph):
-
-    # 1. Perform all the quations for the SEIR model and update the local state.
-    # TODO: What are these anyway?
     for node_id in graph.nodes:
         node_data = graph.nodes[node_id]
 
-        node_data['susceptible'] = node_data['susceptible']
-        node_data['exposed'] = node_data['exposed']
-        node_data['infected'] = node_data['infected']
-        node_data['recovered'] = node_data['recovered']
+        x_old = np.array([
+            node_data['susceptible'],
+            node_data['exposed'],
+            node_data['infectious'],
+            node_data['recovered']
+        ])
+
+        # Getting parameters
+        omega = simConst.SEIR_RATE_RECOVERY
+        mu = simConst.SEIR_RATE_NATURAL_DEATH
+        nu = simConst.SEIR_RATE_NATURAL_BIRTH
+        sigma = simConst.SEIR_PERIOD_LATENT
+        gamma = simConst.SEIR_INFECTED_PERIOD
+        beta = simConst.SEIR_TRANSMISSION_COEFFICIENT
+        h = simConst.SEIR_TIME_STEP
+
+        # Setting up M_x parameters
+        A = 1 + mu * h + (beta * h * x_old[2]) / node_data['population']
+        B = omega * h
+        C = 1 + (mu + sigma) * h
+        D = 1 + (mu + gamma) * h
+        G = sigma * h
+        H = (beta * h * x_old[2]) / node_data['population']
+        J = 1 + (mu + omega) * h
+        F = gamma * h
+
+        # Creating matrices Mx and D
+        M_x = np.array([[A, 0., 0., -B],
+                        [-H, C, 0., 0.],
+                        [0., -G, D, 0.],
+                        [0., 0., -F, J]])
+
+        D = (np.identity(4)
+             + ((nu * h) / 1 + (mu - nu) * h)
+             * np.array([[1., 1., 1., 1.],
+                         [0., 0., 0., 0.],
+                         [0., 0., 0., 0.],
+                         [0., 0., 0., 0.]]))
+
+        # Creating the new state
+        x_new = np.matmul(npl.inv(M_x), D).dot(x_old)
+
+        # Save state
+        node_data['susceptible'] = x_new[0]
+        node_data['exposed'] = x_new[1]
+        node_data['infectious'] = x_new[2]
+        node_data['recovered'] = x_new[3]
 
     return
 
