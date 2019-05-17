@@ -11,13 +11,12 @@ def get_exclude_set(graph, elements):
 
     # Find the threashold that can be used to filter nodes.
     topElements = sorted(centrality, reverse=True)[:elements]
-
-    topElements = [v for c, v in centrality]
-
     minimum = min(topElements)
     maximum = max(topElements)
 
+    topElements = [v for c, v in topElements]
+
     print(
         f"Using {elements} nodes with eigenvector centrality in range [{minimum}:{maximum}]")
-
+    print(topElements)
     return set(topElements)

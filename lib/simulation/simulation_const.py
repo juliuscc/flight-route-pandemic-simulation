@@ -18,10 +18,20 @@ SEIR_RATE_NATURAL_BIRTH = SEIR_RATE_NATURAL_DEATH
 SEIR_PERIOD_LATENT = 1 / 1.2
 
 # infected period gamma = sigma for the influenza
-SEIR_INFECTED_PERIOD = 1 / 2.5
+SEIR_INFECTED_PERIOD = 1 / 1.2
 
 # transmission coefficient beta 1.66 days
 SEIR_TRANSMISSION_COEFFICIENT = 1 / 1.66
 
 # h = 0.1
-SEIR_TIME_STEP = 0.8
+SEIR_TIME_STEP = 0.5
+
+##################################
+# MEASLES
+##################################
+# SEIR_PERIOD_LATENT = 0.143
+
+# TUBERCULOSIS
+SEIR_PERIOD_LATENT = 0.000310               # sigma
+SEIR_INFECTED_PERIOD = 0.123111             # gamma
+SEIR_TRANSMISSION_COEFFICIENT = 0.326655    # beta
