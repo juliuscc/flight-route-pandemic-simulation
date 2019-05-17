@@ -11,7 +11,7 @@ def test_for_ranges(original_graph):
     series_for_all_ranges = list()
     exception_nodes = list()
     graph_size = len(original_graph.nodes)
-    ranges = ssr.range(original_graph, elements=1, selectRange=0.1,)
+    ranges = ssr.range(original_graph, elements=3, selectRange=0.1,)
 
     print("Testing ranges. High to low.")
 
@@ -30,9 +30,6 @@ def test_for_ranges(original_graph):
             #     exception_nodes.append(node)
         print("")
         series_for_all_ranges.append(series_for_range)
-
-# TODO: REMOVE THIS IF WE WANT TO RUN FOR ALL RANGES
-        break
 
     if (len(exception_nodes) > 0):
         print(
