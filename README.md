@@ -10,9 +10,9 @@ The data used for the analysis was gathered from [OpenFlights](https://openfligh
 
 > The [`MIT`][license-url] License (MIT)
 >
-> Copyright (c) 2018 Hannes Rabo
+> Copyright (c) 2019 Hannes Rabo
 >
-> Copyright (c) 2018 Julius Recep Colliander Celik
+> Copyright (c) 2019 Julius Recep Colliander Celik
 >
 > Copyright (c) 2019 Patric Ridell
 >
